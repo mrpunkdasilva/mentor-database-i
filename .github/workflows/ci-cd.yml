@@ -1,0 +1,201 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  validate-sql:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlparse sqlfluff
+
+      - name: Create SQL validation script
+        run: |
+          cat > scripts/validate_sql.py << 'EOF'
+          import os
+          import sys
+          import sqlparse
+          import glob
+
+          def validate_sql_file(file_path):
+              print(f"Validating {file_path}...")
+              try:
+                  with open(file_path, 'r') as f:
+                      sql_content = f.read()
+                  
+                  # Basic syntax check using sqlparse
+                  parsed = sqlparse.parse(sql_content)
+                  if not parsed:
+                      print(f"Error: Could not parse {file_path}")
+                      return False
+                  
+                  # Check for basic SQL syntax
+                  for statement in parsed:
+                      if not statement.tokens:
+                          print(f"Warning: Empty statement in {file_path}")
+                  
+                  return True
+              except Exception as e:
+                  print(f"Error validating {file_path}: {str(e)}")
+                  return False
+
+          def main():
+              sql_files = []
+              # Find all SQL files in the project
+              for pattern in ['**/*.sql', 'normalization/*.sql']:
+                  sql_files.extend(glob.glob(pattern, recursive=True))
+              
+              if not sql_files:
+                  print("No SQL files found to validate")
+                  return 0
+              
+              print(f"Found {len(sql_files)} SQL files to validate")
+              
+              failed = 0
+              for sql_file in sql_files:
+                  if not validate_sql_file(sql_file):
+                      failed += 1
+              
+              if failed:
+                  print(f"Validation failed for {failed} SQL files")
+                  return 1
+              else:
+                  print("All SQL files validated successfully")
+                  return 0
+
+          if __name__ == "__main__":
+              sys.exit(main())
+          EOF
+          mkdir -p scripts
+
+      - name: Validate SQL files
+        run: python scripts/validate_sql.py
+
+  test-docker-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Start PostgreSQL with Docker Compose
+        run: |
+          docker compose up -d
+          # Wait for PostgreSQL to be ready
+          sleep 10
+          # Check if PostgreSQL is running
+          docker ps | grep postgres
+
+      - name: Test PostgreSQL Connection
+        run: |
+          # Install PostgreSQL client
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          
+          # Test connection to PostgreSQL
+          PGPASSWORD=postgres psql -h localhost -U postgres -d mentor_db -c "SELECT 1 AS test_connection;"
+
+      - name: Test DDL Scripts
+        run: |
+          # Test normalized DDL script
+          PGPASSWORD=postgres psql -h localhost -U postgres -d mentor_db -f normalization/ddl_normalizado.sql
+          
+          # Test non-normalized DDL script
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS test_non_normalized;"
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "CREATE DATABASE test_non_normalized;"
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_non_normalized -f normalization/ddl_nao_normalizado.sql
+
+      - name: Stop Docker Compose
+        run: docker compose down
+
+  build-docs:
+    runs-on: ubuntu-latest
+    needs: [validate-sql, test-docker-compose]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material
+
+      - name: Generate documentation index
+        run: |
+          mkdir -p docs
+          
+          # Create main index.md
+          cat > docs/index.md << 'EOF'
+          # Mentor Database I
+          
+          Este projeto demonstra conceitos fundamentais de banco de dados, com foco em normalização e boas práticas de modelagem de dados usando PostgreSQL.
+          
+          ## Estrutura do Projeto
+          
+          - **docker-compose.yml**: Configuração para iniciar um container PostgreSQL para desenvolvimento e testes
+          - **normalization/**: Exemplos práticos de normalização de banco de dados
+          - **dql/**: Exercícios de consultas SQL (Data Query Language)
+          
+          ## Exercícios Disponíveis
+          
+          EOF
+          
+          # Add list of exercises
+          for dir in dql/exercise_*; do
+            if [ -d "$dir" ]; then
+              num=$(echo $dir | sed 's/dql\/exercise_//')
+              title=$(grep -m 1 "# " $dir/README.md | sed 's/# //')
+              echo "- [Exercício $num]($dir/README.md): $title" >> docs/index.md
+            fi
+          done
+          
+          # Create mkdocs.yml
+          cat > mkdocs.yml << 'EOF'
+          site_name: Mentor Database I
+          theme:
+            name: material
+            palette:
+              primary: indigo
+              accent: indigo
+          markdown_extensions:
+            - pymdownx.highlight
+            - pymdownx.superfences:
+                custom_fences:
+                  - name: mermaid
+                    class: mermaid
+                    format: !!python/name:pymdownx.superfences.fence_code_format
+          plugins:
+            - search
+          EOF
+
+      - name: Build documentation
+        run: mkdocs build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
