@@ -1,6 +1,6 @@
 # Normalização
 
-Este documento explica o processo de normalização aplicado ao nosso banco de dados, transformando uma estrutura não normalizada em um modelo relacional eficiente e bem estruturado.
+Este artigo explica o processo de normalização aplicado ao nosso banco de dados, transformando uma estrutura não normalizada em um modelo relacional eficiente e bem estruturado.
 
 ## O que é Normalização?
 
