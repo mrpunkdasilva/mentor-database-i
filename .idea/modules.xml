@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/mentor-u-database-i.iml" filepath="$PROJECT_DIR$/mentor-u-database-i.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mentor-database-i.iml" filepath="$PROJECT_DIR$/mentor-database-i.iml" />
     </modules>
   </component>
 </project>
