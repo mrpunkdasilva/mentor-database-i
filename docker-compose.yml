@@ -3,12 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: mentor-u-postgres
+    container_name: mentor-db-postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mentor_u_db
+      POSTGRES_DB: mentor_db
     ports:
       - "5432:5432"
     volumes:

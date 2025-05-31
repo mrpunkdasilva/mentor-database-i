@@ -1,4 +1,4 @@
-# Mentor-U Database I
+# Mentor Database I
 
 Este projeto demonstra conceitos fundamentais de banco de dados, com foco em normalização e boas práticas de modelagem de dados usando PostgreSQL.
 
@@ -19,8 +19,8 @@ Este projeto demonstra conceitos fundamentais de banco de dados, com foco em nor
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/mentor-u-database-i.git
-cd mentor-u-database-i
+git clone https://github.com/seu-usuario/mentor-database-i.git
+cd mentor-database-i
 ```
 
 2. Inicie o container PostgreSQL:
@@ -31,10 +31,10 @@ docker-compose up -d
 3. Conecte-se ao banco de dados:
 ```bash
 # Usando psql (se instalado)
-psql -h localhost -U postgres -d mentor_u_db
+psql -h localhost -U postgres -d mentor_db
 
 # Ou usando docker
-docker exec -it mentor-u-postgres psql -U postgres -d mentor_u_db
+docker exec -it mentor-u-postgres psql -U postgres -d mentor_db
 ```
 
 4. Execute os scripts SQL:
@@ -59,7 +59,7 @@ psql -h localhost -U postgres -d postgres -f normalization/ddl_normalizado.sql
 O PostgreSQL está configurado com as seguintes credenciais:
 - **Usuário**: postgres
 - **Senha**: postgres
-- **Banco de Dados**: mentor_u_db
+- **Banco de Dados**: mentor_db
 - **Porta**: 5432
 
 ## Contribuição
