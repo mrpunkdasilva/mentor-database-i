@@ -1,4 +1,4 @@
-  # Exercício 02 - Biblioteca Universitária
+# Exercício 02 - Biblioteca Universitária
 
 ## Descrição do Cenário
 
