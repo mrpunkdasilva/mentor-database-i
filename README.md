@@ -141,7 +141,6 @@ O PostgreSQL está configurado com as seguintes credenciais:
 
 ### Avançado
 - Exercícios DQL 16-20: JOINs complexos e relatórios
-- Otimização de performance e índices
 
 ## Recursos Adicionais
 
