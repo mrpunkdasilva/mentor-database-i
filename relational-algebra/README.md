@@ -1,7 +1,5 @@
 # Álgebra Relacional em Bancos de Dados
 
-A álgebra relacional é um conjunto de operações que fornece uma base matemática para manipular e consultar dados em bancos de dados relacionais. Desenvolvida por E.F. Codd na década de 1970, a álgebra relacional é fundamental para o entendimento de como os sistemas de gerenciamento de banco de dados (SGBDs) processam consultas.
-
 ## O que é Álgebra Relacional?
 
 A álgebra relacional é uma linguagem formal que define um conjunto de operações para manipular relações (tabelas) em um banco de dados. Cada operação toma uma ou mais relações como entrada e produz uma nova relação como saída. Isso permite a construção de consultas complexas a partir de operações mais simples.
@@ -23,6 +21,7 @@ A álgebra relacional é importante porque:
 Imagine uma peneira que só deixa passar as linhas que atendem à condição.
 
 ### Sintaxe Formal:
+
 $$
 \sigma_{\text{condição}}(R)
 $$
@@ -42,6 +41,7 @@ $$
 | 3  | João    | 4200    | TI     |
 
 **Consulta:**  
+
 $$
 \sigma_{salario > 3000}(Funcionario)
 $$
@@ -60,6 +60,7 @@ SELECT * FROM Funcionario WHERE salario > 3000;
 
 ### Exemplo 2 (Condição Composta):
 **Consulta:**  
+
 $$
 \sigma_{depto='TI' \land salario < 4000}(Funcionario)
 $$
@@ -74,6 +75,7 @@ WHERE depto = 'TI' AND salario < 4000;
 
 ### Exemplo 3 (Com Texto):
 **Consulta:**  
+
 $$
 \sigma_{nome \text{ LIKE 'A%'}}(Funcionario)
 $$
@@ -98,6 +100,7 @@ SELECT * FROM Funcionario WHERE nome LIKE 'A%';
 Imagine um holofote que ilumina apenas certas colunas da tabela.
 
 ### Sintaxe Formal:
+
 $$
 \pi_{\text{lista\_de\_colunas}}(R)
 $$
@@ -109,6 +112,7 @@ $$
 
 ### Exemplo 1 (Básico):
 **Consulta:**  
+
 $$
 \pi_{nome, depto}(Funcionario)
 $$
@@ -136,6 +140,7 @@ SELECT nome, depto FROM Funcionario;
 | 3  | Ana    | São Paulo  |
 
 **Consulta:**  
+
 $$
 \pi_{nome, cidade}(Clientes)
 $$
@@ -148,6 +153,7 @@ $$
 | Carlos | Rio       |
 
 **SQL:**
+
 ```sql
 SELECT DISTINCT nome, cidade FROM Clientes;
 ```
@@ -180,6 +186,7 @@ SELECT nome, salario*12 FROM Funcionario;
 Imagine duas listas sendo combinadas em todas as possibilidades possíveis.
 
 ### Sintaxe Formal:
+
 $$
 R \times S
 $$
@@ -206,6 +213,7 @@ $$
 | G       |
 
 **Consulta:**  
+
 $$
 Cores \times Tamanhos
 $$
@@ -244,6 +252,7 @@ SELECT * FROM Cores, Tamanhos;
 | D2  | História   |
 
 **Consulta:**  
+
 $$
 Alunos \times Disciplinas
 $$
@@ -268,6 +277,7 @@ Se você tem:
 - Uma tabela com 10.000 produtos
 
 O produto cartesiano terá:
+
 $$
 1000 \times 10000 = 10.000.000 \text{ linhas!}
 $$
@@ -297,13 +307,16 @@ Queremos listar todos os livros com preço > 35 combinados com todos os autores:
 
 Passo a passo:
 1. Filtrar livros:  
-   $$
-   \sigma_{preco > 35}(Livros)
-   $$
+
+$$
+\sigma_{preco > 35}(Livros)
+$$
+
 2. Combinar com autores:  
-   $$
-   \sigma_{preco > 35}(Livros) \times Autores
-   $$
+
+$$
+\sigma_{preco > 35}(Livros) \times Autores
+$$
 
 **Resultado:**
 
@@ -332,6 +345,7 @@ CROSS JOIN Autores A;
 Combina os resultados de duas relações, mantendo apenas uma ocorrência de cada tupla duplicada.
 
 ### Sintaxe Formal:
+
 $$
 R \cup S
 $$
@@ -357,6 +371,7 @@ $$
 | 3  | João   | Gerente    |
 
 **Consulta:**
+
 $$
 Funcionarios \cup Gerentes
 $$
@@ -393,6 +408,7 @@ $$
 Retorna as tuplas presentes na primeira relação que não estão na segunda.
 
 ### Sintaxe Formal:
+
 $$
 R - S
 $$
@@ -400,6 +416,7 @@ $$
 ### Exemplo Prático:
 
 **Consulta:**
+
 $$
 Funcionarios - Gerentes
 $$
@@ -422,6 +439,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Gerentes G WHERE G.id = F.id);
 
 ### Caso de Uso Real:
 Identificar produtos nunca vendidos:
+
 $$
 \pi_{id}(Produtos) - \pi_{produto\_id}(Vendas)
 $$
@@ -432,6 +450,7 @@ $$
 Retorna apenas as tuplas que estão presentes em ambas as relações.
 
 ### Sintaxe Formal:
+
 $$
 R \cap S
 $$
@@ -439,6 +458,7 @@ $$
 ### Exemplo Prático:
 
 **Consulta:**
+
 $$
 Funcionarios \cap Gerentes
 $$
@@ -461,12 +481,14 @@ INNER JOIN Gerentes G ON F.id = G.id;
 
 ### Expressão Alternativa:
 A interseção pode ser expressa usando diferença:
+
 $$
 R \cap S = R - (R - S)
 $$
 
 ### Caso de Uso Real:
 Encontrar alunos que cursam ambas as disciplinas:
+
 $$
 \pi_{aluno\_id}(Matriculas\_Matematica) \cap \pi_{aluno\_id}(Matriculas\_Fisica)
 $$
@@ -548,6 +570,7 @@ Escreva as expressões para:
 Combina tuplas de duas relações onde uma condição especificada (θ) é verdadeira. A condição pode ser qualquer comparação entre atributos.
 
 ### Sintaxe Formal:
+
 $$
 R \bowtie_{\theta} S
 $$
@@ -575,6 +598,7 @@ $$
 
 **Consulta:**
 Encontrar clientes com saldo maior ou igual ao limite do cartão
+
 $$
 Cliente \bowtie_{saldo \geq limite} Cartao
 $$
@@ -627,6 +651,7 @@ WHERE F.salario > 0.1 * D.orcamento;
 Combina automaticamente tuplas de duas relações com base em atributos com o mesmo nome, eliminando uma das colunas duplicadas.
 
 ### Sintaxe Formal:
+
 $$
 R \bowtie S
 $$
@@ -653,6 +678,7 @@ $$
 | 5        | Medicina    | 6       |
 
 **Consulta:**
+
 $$
 Aluno \bowtie Curso
 $$
@@ -690,6 +716,7 @@ FROM Aluno A JOIN Curso C ON A.curso_id = C.curso_id;
 | 2  | Carlos | Vendas       | Gerente   |
 
 **Consulta:**
+
 $$
 Projeto \bowtie Funcionario
 $$
@@ -715,6 +742,7 @@ $$
 ## Casos Especiais
 
 ### Auto-junção:
+
 $$
 Funcionario \bowtie_{gerente\_id = id} Funcionario
 $$
@@ -726,6 +754,7 @@ FROM Funcionario F JOIN Funcionario G ON F.gerente_id = G.id;
 ```
 
 ### Junção com Múltiplas Condições:
+
 $$
 Pedido \bowtie_{cliente\_id = id \land data\_pedido > data\_cadastro} Cliente
 $$
@@ -799,6 +828,7 @@ Funcionario(id, nome, salario)
 ```
 
 **Consulta:**
+
 $$
 \rho_{Empregado}(Funcionario)
 $$
@@ -836,6 +866,7 @@ Funcionario(id, nome, salario)
 **Problema:** Ambas têm colunas "id" e "nome"
 
 **Solução:**
+
 $$
 \rho_{Depto(id\_depto, nome\_depto, gerente\_id)}(Departamento) \bowtie_{gerente\_id = id} Funcionario
 $$
@@ -853,6 +884,7 @@ JOIN Funcionario ON Depto.gerente_id = Funcionario.id;
 Encontra tuplas em uma relação R que se relacionam com **todas** as tuplas em uma relação S.
 
 ### Sintaxe Formal:
+
 $$
 R(A, B) \div S(B)
 $$
@@ -883,6 +915,7 @@ Onde:
 | 102        |
 
 **Consulta:**
+
 $$
 Cliente\_Produto(cliente\_id, produto\_id) \div Produtos\_Especificos(produto\_id)
 $$
@@ -898,6 +931,7 @@ $$
 
 ### Implementação Alternativa:
 A divisão pode ser expressa usando outros operadores:
+
 $$
 R \div S = \pi_A(R) - \pi_A((\pi_A(R) \times S) - R)
 $$
@@ -1045,6 +1079,7 @@ $$
 ## Processamento Passo a Passo
 
 ### Passo 1: Seleção de Funcionários (σ)
+
 $$
 \sigma_{salario>5000}(Funcionario)
 $$
@@ -1060,6 +1095,7 @@ $$
 *Explicação:* Foram filtrados apenas os funcionários com salário acima de 5000.
 
 ### Passo 2: Seleção de Departamentos (σ)
+
 $$
 \sigma_{orcamento>10^6}(Departamento)
 $$
@@ -1074,6 +1110,7 @@ $$
 *Explicação:* Foram selecionados apenas departamentos com orçamento superior a 1 milhão.
 
 ### Passo 3: Junção Natural (⋈)
+
 $$
 \text{Resultado Passo 1} \bowtie \text{Resultado Passo 2}
 $$
@@ -1095,6 +1132,7 @@ $$
 2. Seu departamento (Vendas) tem orçamento 800.000 (não passou no segundo filtro)
 
 ### Passo 4: Projeção Final (π)
+
 $$
 \pi_{nome}(\text{Resultado da Junção})
 $$
@@ -1131,11 +1169,13 @@ AND D.orcamento > 1000000;
 ## Variações da Consulta
 
 ### Versão com Renomeação
+
 $$
 \pi_{nome\_func}\left( \rho_{Func(id,nome\_func,sal,dept)}(\sigma_{sal>5000}(Funcionario)) \bowtie \sigma_{orc>10^6}(Departamento) \right)
-$$
+1$$
 
 ### Versão com Produto Cartesiano (menos eficiente)
+
 $$
 \pi_{nome}\left( \sigma_{salario>5000 \land orcamento>10^6 \land depto\_id=id}(Funcionario \times Departamento) \right)
 $$
@@ -1157,6 +1197,7 @@ Modifique a consulta para incluir:
 3. Departamentos com orçamento entre 1M e 2M
 
 **Solução em Álgebra Relacional:**
+
 $$
 \pi_{nome, nome\_depto}\left( \sigma_{salario>5000 \land salario<10000}(Funcionario) \bowtie \sigma_{orcamento>10^6 \land orcamento<2\cdot10^6}(Departamento) \right)
 $$
