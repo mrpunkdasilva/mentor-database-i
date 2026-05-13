@@ -102,7 +102,7 @@ Imagine um holofote que ilumina apenas certas colunas da tabela.
 ### Sintaxe Formal:
 
 $$
-\pi_{\text{lista\_de\_colunas}}(R)
+\pi_{\text{lista de colunas}}(R)
 $$
 
 ### Como Funciona:
